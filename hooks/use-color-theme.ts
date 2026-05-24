@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useThemeContext } from '@/lib/theme-provider';
 
 export interface ColorTheme {
   name: string;
@@ -9,6 +10,22 @@ export interface ColorTheme {
     middle: string;
     lower: string;
     bottom: string;
+  };
+  lightColors: {
+    primary: string;
+    background: string;
+    surface: string;
+    foreground: string;
+    muted: string;
+    border: string;
+  };
+  darkColors: {
+    primary: string;
+    background: string;
+    surface: string;
+    foreground: string;
+    muted: string;
+    border: string;
   };
 }
 
@@ -22,6 +39,22 @@ const THEMES: Record<string, ColorTheme> = {
       lower: '#E8D5C4',
       bottom: '#FFF9C4',
     },
+    lightColors: {
+      primary: '#2D8659',
+      background: '#F5F1ED',
+      surface: '#F0E8E0',
+      foreground: '#3E2723',
+      muted: '#8D6E63',
+      border: '#D7CCC8',
+    },
+    darkColors: {
+      primary: '#4CAF7F',
+      background: '#1A1410',
+      surface: '#2A1F18',
+      foreground: '#F5E6D3',
+      muted: '#A1887F',
+      border: '#3E2723',
+    },
   },
   theme2: {
     name: 'البرتقالي والكريمي',
@@ -31,6 +64,22 @@ const THEMES: Record<string, ColorTheme> = {
       middle: '#CD5C5C',
       lower: '#F5DEB3',
       bottom: '#FFFACD',
+    },
+    lightColors: {
+      primary: '#E65100',
+      background: '#FFF8F0',
+      surface: '#FFE8D6',
+      foreground: '#3E2723',
+      muted: '#A1887F',
+      border: '#FFCCB2',
+    },
+    darkColors: {
+      primary: '#FF9800',
+      background: '#1A1410',
+      surface: '#2A1F18',
+      foreground: '#FFE8D6',
+      muted: '#D2691E',
+      border: '#3E2723',
     },
   },
   theme3: {
@@ -42,6 +91,22 @@ const THEMES: Record<string, ColorTheme> = {
       lower: '#F5E6D3',
       bottom: '#FFFEF0',
     },
+    lightColors: {
+      primary: '#7B68A6',
+      background: '#F5F1ED',
+      surface: '#F0E8E0',
+      foreground: '#3E2723',
+      muted: '#8D6E63',
+      border: '#D7CCC8',
+    },
+    darkColors: {
+      primary: '#9C7E8F',
+      background: '#1A1410',
+      surface: '#2A1F18',
+      foreground: '#F5E6D3',
+      muted: '#A1887F',
+      border: '#3E2723',
+    },
   },
   theme4: {
     name: 'الوردي والأخضر',
@@ -52,6 +117,22 @@ const THEMES: Record<string, ColorTheme> = {
       lower: '#F5E6D3',
       bottom: '#C8E6C9',
     },
+    lightColors: {
+      primary: '#E91E63',
+      background: '#FFF5F7',
+      surface: '#FFE8ED',
+      foreground: '#3E2723',
+      muted: '#8D6E63',
+      border: '#F8BBD0',
+    },
+    darkColors: {
+      primary: '#FF9999',
+      background: '#1A1410',
+      surface: '#2A1F18',
+      foreground: '#F5E6D3',
+      muted: '#E8A87C',
+      border: '#3E2723',
+    },
   },
 };
 
@@ -60,6 +141,7 @@ const STORAGE_KEY = 'quran_color_theme';
 export function useColorTheme() {
   const [currentTheme, setCurrentTheme] = useState<string>('theme1');
   const [isLoading, setIsLoading] = useState(true);
+  const themeContext = useThemeContext();
 
   useEffect(() => {
     loadTheme();
@@ -70,6 +152,9 @@ export function useColorTheme() {
       const stored = await AsyncStorage.getItem(STORAGE_KEY);
       if (stored) {
         setCurrentTheme(stored);
+        applyThemeColors(stored);
+      } else {
+        applyThemeColors('theme1');
       }
       setIsLoading(false);
     } catch (error) {
@@ -78,9 +163,26 @@ export function useColorTheme() {
     }
   };
 
+  const applyThemeColors = (themeId: string) => {
+    const theme = THEMES[themeId];
+    if (!theme) return;
+
+    // تطبيق الألوان على نظام الثيم
+    const isDark = themeContext.colorScheme === 'dark';
+    const colors = isDark ? theme.darkColors : theme.lightColors;
+
+    if (typeof document !== 'undefined') {
+      const root = document.documentElement;
+      Object.entries(colors).forEach(([token, value]) => {
+        root.style.setProperty(`--color-${token}`, value);
+      });
+    }
+  };
+
   const setTheme = async (themeId: string) => {
     try {
       setCurrentTheme(themeId);
+      applyThemeColors(themeId);
       await AsyncStorage.setItem(STORAGE_KEY, themeId);
     } catch (error) {
       console.error('Error saving theme:', error);
@@ -95,6 +197,11 @@ export function useColorTheme() {
     return THEMES;
   };
 
+  // إعادة تطبيق الألوان عند تغيير الوضع الليلي
+  useEffect(() => {
+    applyThemeColors(currentTheme);
+  }, [themeContext.colorScheme]);
+
   return {
     currentTheme,
     setTheme,
@@ -103,3 +210,5 @@ export function useColorTheme() {
     isLoading,
   };
 }
+
+

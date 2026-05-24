@@ -2,6 +2,7 @@ import React from 'react';
 import { ScrollView, Text, View, TouchableOpacity, Switch } from 'react-native';
 import { ScreenContainer } from '@/components/screen-container';
 import { useQuranSettings } from '@/hooks/use-quran-settings';
+import { useReminders } from '@/hooks/use-reminders';
 import { useColors } from '@/hooks/use-colors';
 
 export default function SettingsScreen() {
@@ -11,6 +12,11 @@ export default function SettingsScreen() {
     updateLineHeight,
     toggleDarkMode,
   } = useQuranSettings();
+  const {
+    settings: reminderSettings,
+    toggleReminders,
+    setIntervalDays,
+  } = useReminders();
   const colors = useColors();
 
   const fontSizes: Array<{ label: string; value: 'small' | 'medium' | 'large' | 'xlarge' }> = [
@@ -21,10 +27,17 @@ export default function SettingsScreen() {
   ];
 
   const lineHeights = [
+    { label: '1.2x', value: 1.2 },
     { label: '1.4x', value: 1.4 },
     { label: '1.6x', value: 1.6 },
     { label: '1.8x', value: 1.8 },
-    { label: '2.0x', value: 2.0 },
+  ];
+
+  const reminderIntervals = [
+    { label: 'يوم واحد', value: 1 },
+    { label: 'يومان', value: 2 },
+    { label: '3 أيام', value: 3 },
+    { label: 'أسبوع', value: 7 },
   ];
 
   const SettingSection = ({
@@ -121,21 +134,78 @@ export default function SettingsScreen() {
           </View>
         </SettingSection>
 
+        {/* Reminders Section */}
+        <SettingSection title="التذكيرات">
+          <View
+            className="px-4 py-4 rounded-lg mb-3"
+            style={{ backgroundColor: colors.surface }}
+          >
+            <View className="flex-row items-center justify-between mb-3">
+              <Text style={{ color: colors.foreground }}>تفعيل التذكيرات</Text>
+              <Switch
+                value={reminderSettings.enabled}
+                onValueChange={toggleReminders}
+                trackColor={{ false: colors.border, true: colors.primary }}
+                thumbColor={reminderSettings.enabled ? colors.background : colors.muted}
+              />
+            </View>
+            <Text
+              className="text-xs"
+              style={{ color: colors.muted }}
+            >
+              سيتم تذكيرك بقراءة القرآن إذا لم تدخل التطبيق
+            </Text>
+          </View>
+
+          {reminderSettings.enabled && (
+            <>
+              <Text
+                className="text-sm font-semibold mb-2"
+                style={{ color: colors.foreground }}
+              >
+                التذكير بعد:
+              </Text>
+              {reminderIntervals.map((interval) => (
+                <OptionButton
+                  key={interval.value}
+                  label={interval.label}
+                  isSelected={reminderSettings.intervalDays === interval.value}
+                  onPress={() => setIntervalDays(interval.value)}
+                />
+              ))}
+            </>
+          )}
+        </SettingSection>
+
         {/* About Section */}
         <SettingSection title="معلومات">
           <View
             className="px-4 py-4 rounded-lg"
             style={{ backgroundColor: colors.surface }}
           >
-            <Text style={{ color: colors.foreground }} className="mb-2">
+            <Text style={{ color: colors.foreground }} className="mb-3">
               <Text className="font-bold">التطبيق:</Text> مصحف النور
             </Text>
-            <Text style={{ color: colors.foreground }} className="mb-2">
+            <Text style={{ color: colors.foreground }} className="mb-3">
               <Text className="font-bold">الإصدار:</Text> 1.0.0
             </Text>
-            <Text style={{ color: colors.muted }} className="text-sm mt-2">
+            <Text style={{ color: colors.foreground }} className="mb-4">
+              <Text className="font-bold">المطور:</Text> محمد حيدر
+            </Text>
+            <Text style={{ color: colors.muted }} className="text-sm leading-relaxed mb-4">
               تطبيق لقراءة القرآن الكريم بدون إنترنت مع تصميم جميل ومريح للعين
             </Text>
+            <View
+              className="p-3 rounded-lg"
+              style={{ backgroundColor: colors.border }}
+            >
+              <Text
+                style={{ color: colors.foreground }}
+                className="text-xs leading-relaxed text-right"
+              >
+                أسأل الله العلي العظيم أن يجعل هذا العمل خالصاً لوجهه الكريم، وأن يتقبله صدقة جارية لي ولوالدي، وأن يكون نوراً ورفعة لنا في الدنيا والآخرة. لا تنسونا من صالح دعائكم بظهر الغيب.
+              </Text>
+            </View>
           </View>
         </SettingSection>
 

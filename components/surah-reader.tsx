@@ -88,9 +88,10 @@ export function SurahReader({
               className="text-right"
               style={{
                 fontSize,
-                lineHeight: fontSize * lineHeight,
+                lineHeight: fontSize * (lineHeight || 1.6),
                 color: colors.foreground,
                 fontFamily: 'System',
+                letterSpacing: 0.5,
               }}
             >
               {verse.text}

@@ -1,6 +1,7 @@
 import React from 'react';
 import { ScrollView, Text, View, TouchableOpacity, Switch } from 'react-native';
 import { ScreenContainer } from '@/components/screen-container';
+import { ColorThemeSelector } from '@/components/color-theme-selector';
 import { useQuranSettings } from '@/hooks/use-quran-settings';
 import { useReminders } from '@/hooks/use-reminders';
 import { useColors } from '@/hooks/use-colors';
@@ -27,10 +28,10 @@ export default function SettingsScreen() {
   ];
 
   const lineHeights = [
-    { label: '1.2x', value: 1.2 },
     { label: '1.4x', value: 1.4 },
     { label: '1.6x', value: 1.6 },
     { label: '1.8x', value: 1.8 },
+    { label: '2.0x', value: 2.0 },
   ];
 
   const reminderIntervals = [
@@ -116,6 +117,11 @@ export default function SettingsScreen() {
               onPress={() => updateLineHeight(height.value)}
             />
           ))}
+        </SettingSection>
+
+        {/* Color Themes Section */}
+        <SettingSection title="سمات الألوان">
+          <ColorThemeSelector />
         </SettingSection>
 
         {/* Dark Mode Section */}

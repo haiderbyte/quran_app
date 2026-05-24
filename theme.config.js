@@ -22,4 +22,48 @@ const themeColors = {
   verseNumber: { light: '#2D8659', dark: '#4CAF7F' },
 };
 
-module.exports = { themeColors };
+// سمات الألوان المتدرجة
+const colorThemes = {
+  theme1: {
+    name: 'الأخضر والبني',
+    colors: {
+      top: '#7CB342',
+      upper: '#A1887F',
+      middle: '#D32F2F',
+      lower: '#E8D5C4',
+      bottom: '#FFF9C4',
+    },
+  },
+  theme2: {
+    name: 'البرتقالي والكريمي',
+    colors: {
+      top: '#FF9800',
+      upper: '#D2691E',
+      middle: '#CD5C5C',
+      lower: '#F5DEB3',
+      bottom: '#FFFACD',
+    },
+  },
+  theme3: {
+    name: 'البنفسجي والرمادي',
+    colors: {
+      top: '#D7CCC8',
+      upper: '#A39F9F',
+      middle: '#9C7E8F',
+      lower: '#F5E6D3',
+      bottom: '#FFFEF0',
+    },
+  },
+  theme4: {
+    name: 'الوردي والأخضر',
+    colors: {
+      top: '#FF9999',
+      upper: '#E8A87C',
+      middle: '#D4A5A5',
+      lower: '#F5E6D3',
+      bottom: '#C8E6C9',
+    },
+  },
+};
+
+module.exports = { themeColors, colorThemes };

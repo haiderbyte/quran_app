@@ -7,10 +7,18 @@ import { useColors } from '@/hooks/use-colors';
 export default function AdhkarScreen() {
   const { categories, isLoading } = useAdhkar();
   const colors = useColors();
-  const [selectedCategoryId, setSelectedCategoryId] = useState<number | null>(null);
+  const [expandedCategories, setExpandedCategories] = useState<Set<number>>(new Set());
   const [itemCounts, setItemCounts] = useState<{ [key: number]: number }>({});
 
-  const selectedCategory = categories.find((cat) => cat.id === selectedCategoryId);
+  const toggleCategory = (categoryId: number) => {
+    const newExpanded = new Set(expandedCategories);
+    if (newExpanded.has(categoryId)) {
+      newExpanded.delete(categoryId);
+    } else {
+      newExpanded.add(categoryId);
+    }
+    setExpandedCategories(newExpanded);
+  };
 
   const handleCounterDecrement = (itemId: number, initialCount: number) => {
     const currentCount = itemCounts[itemId] ?? initialCount;
@@ -29,36 +37,13 @@ export default function AdhkarScreen() {
     }));
   };
 
-  const renderCategoryButton = ({ item }: { item: any }) => {
-    const isSelected = item.id === selectedCategoryId;
-    return (
-      <TouchableOpacity
-        onPress={() => setSelectedCategoryId(item.id)}
-        className="mr-2 mb-2 px-4 py-2 rounded-full"
-        style={{
-          backgroundColor: isSelected ? colors.primary : colors.surface,
-          borderWidth: isSelected ? 0 : 1,
-          borderColor: colors.border,
-        }}
-      >
-        <Text
-          className="font-semibold text-sm"
-          style={{
-            color: isSelected ? colors.background : colors.foreground,
-          }}
-        >
-          {item.name}
-        </Text>
-      </TouchableOpacity>
-    );
-  };
-
-  const renderAdhkarItem = ({ item }: { item: any }) => {
+  const renderAdhkarItem = (item: any) => {
     const currentCount = itemCounts[item.id] ?? item.count;
     const isCompleted = currentCount === 0;
 
     return (
       <View
+        key={item.id}
         className="p-4 mb-3 rounded-lg"
         style={{
           backgroundColor: isCompleted ? colors.success : colors.surface,
@@ -130,6 +115,41 @@ export default function AdhkarScreen() {
     );
   };
 
+  const renderCategory = (category: any) => {
+    const isExpanded = expandedCategories.has(category.id);
+
+    return (
+      <View key={category.id} className="mb-4">
+        {/* Category Header */}
+        <TouchableOpacity
+          onPress={() => toggleCategory(category.id)}
+          className="px-4 py-3 rounded-lg flex-row items-center justify-between"
+          style={{ backgroundColor: colors.primary }}
+        >
+          <Text
+            className="text-lg font-bold"
+            style={{ color: colors.background }}
+          >
+            {category.name}
+          </Text>
+          <Text
+            className="text-2xl"
+            style={{ color: colors.background }}
+          >
+            {isExpanded ? '▼' : '▶'}
+          </Text>
+        </TouchableOpacity>
+
+        {/* Category Items */}
+        {isExpanded && (
+          <View className="mt-3 pl-2">
+            {category.items.map((item: any) => renderAdhkarItem(item))}
+          </View>
+        )}
+      </View>
+    );
+  };
+
   if (isLoading) {
     return (
       <ScreenContainer className="items-center justify-center">
@@ -140,44 +160,15 @@ export default function AdhkarScreen() {
 
   return (
     <ScreenContainer className="p-4">
-      <Text className="text-3xl font-bold mb-4" style={{ color: colors.primary }}>
-        الأذكار والأدعية
-      </Text>
+      <ScrollView showsVerticalScrollIndicator={false}>
+        <Text className="text-3xl font-bold mb-6" style={{ color: colors.primary }}>
+          الأذكار والأدعية
+        </Text>
 
-      {/* Categories */}
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        className="mb-4"
-      >
-        <FlatList
-          data={categories}
-          renderItem={renderCategoryButton}
-          keyExtractor={(item) => item.id.toString()}
-          scrollEnabled={false}
-          numColumns={categories.length}
-        />
+        {categories.map((category) => renderCategory(category))}
+
+        <View className="h-4" />
       </ScrollView>
-
-      {/* Adhkar Items */}
-      {selectedCategory ? (
-        <FlatList
-          data={selectedCategory.items}
-          renderItem={renderAdhkarItem}
-          keyExtractor={(item) => item.id.toString()}
-          scrollEnabled={true}
-          showsVerticalScrollIndicator={true}
-        />
-      ) : (
-        <View className="flex-1 items-center justify-center">
-          <Text
-            className="text-lg text-center"
-            style={{ color: colors.muted }}
-          >
-            اختر فئة من الأذكار لبدء العد
-          </Text>
-        </View>
-      )}
     </ScreenContainer>
   );
 }

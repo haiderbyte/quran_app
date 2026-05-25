@@ -138,7 +138,16 @@ const THEMES: Record<string, ColorTheme> = {
 
 const STORAGE_KEY = 'quran_color_theme';
 
-export function useColorTheme() {
+export interface UseColorThemeReturn {
+  currentTheme: string;
+  setTheme: (themeId: string) => Promise<void>;
+  getTheme: () => ColorTheme;
+  getAllThemes: () => Array<ColorTheme & { id: string }>;
+  isLoading: boolean;
+  THEMES: Record<string, ColorTheme>;
+}
+
+export function useColorTheme(): UseColorThemeReturn {
   const [currentTheme, setCurrentTheme] = useState<string>('theme1');
   const [isLoading, setIsLoading] = useState(true);
   const themeContext = useThemeContext();
@@ -193,8 +202,11 @@ export function useColorTheme() {
     return THEMES[currentTheme] || THEMES.theme1;
   };
 
-  const getAllThemes = (): Record<string, ColorTheme> => {
-    return THEMES;
+  const getAllThemes = (): Array<ColorTheme & { id: string }> => {
+    return Object.entries(THEMES).map(([id, theme]) => ({
+      ...theme,
+      id,
+    }));
   };
 
   // إعادة تطبيق الألوان عند تغيير الوضع الليلي
@@ -208,6 +220,7 @@ export function useColorTheme() {
     getTheme,
     getAllThemes,
     isLoading,
+    THEMES,
   };
 }
 

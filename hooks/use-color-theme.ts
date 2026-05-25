@@ -212,7 +212,7 @@ export function useColorTheme(): UseColorThemeReturn {
   // إعادة تطبيق الألوان عند تغيير الوضع الليلي
   useEffect(() => {
     applyThemeColors(currentTheme);
-  }, [themeContext.colorScheme]);
+  }, [themeContext.colorScheme, currentTheme]);
 
   return {
     currentTheme,

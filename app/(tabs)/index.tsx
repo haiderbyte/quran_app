@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { FlatList, Text, View, TextInput, TouchableOpacity } from 'react-native';
+import { FlatList, Text, View, TextInput, TouchableOpacity, ScrollView } from 'react-native';
 import { useRouter } from 'expo-router';
 import { ScreenContainer } from '@/components/screen-container';
 import { useQuran, type Surah } from '@/hooks/use-quran';
@@ -41,6 +41,7 @@ export default function HomeScreen() {
 
   return (
     <ScreenContainer className="p-4">
+      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ flexGrow: 1 }}>
       {/* Header */}
       <View className="mb-6">
         <Text
@@ -84,7 +85,8 @@ export default function HomeScreen() {
       <FlatList
         data={filteredSurahs}
         keyExtractor={(item: Surah) => item.id.toString()}
-        scrollEnabled={false}
+        scrollEnabled={true}
+        nestedScrollEnabled={true}
         renderItem={({ item }: { item: Surah }) => (
           <ModernSurahCard
             number={item.id}
@@ -103,6 +105,7 @@ export default function HomeScreen() {
           </View>
         }
       />
+      </ScrollView>
     </ScreenContainer>
   );
 }

@@ -1,30 +1,28 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { ScrollView, Text, View, TouchableOpacity, Switch } from 'react-native';
 import { ScreenContainer } from '@/components/screen-container';
-import { ColorThemeSelector } from '@/components/color-theme-selector';
-import { useQuranSettings } from '@/hooks/use-quran-settings';
-import { useReminders } from '@/hooks/use-reminders';
 import { useColors } from '@/hooks/use-colors';
+import { useThemeContext } from '@/lib/theme-provider';
+import { useQuranSettings } from '@/hooks/use-quran-settings';
+import { ModernColorPicker } from '@/components/modern-color-picker';
 
 export default function SettingsScreen() {
+  const colors = useColors();
+  const { colorScheme, setColorScheme } = useThemeContext();
   const {
     settings,
     updateFontSize,
     updateLineHeight,
-    toggleDarkMode,
   } = useQuranSettings();
-  const {
-    settings: reminderSettings,
-    toggleReminders,
-    setIntervalDays,
-  } = useReminders();
-  const colors = useColors();
+  
+  const [remindersEnabled, setRemindersEnabled] = useState(true);
+  const [reminderInterval, setReminderInterval] = useState(2);
 
-  const fontSizes: Array<{ label: string; value: 'small' | 'medium' | 'large' | 'xlarge' }> = [
-    { label: 'صغير', value: 'small' },
-    { label: 'متوسط', value: 'medium' },
-    { label: 'كبير', value: 'large' },
-    { label: 'كبير جداً', value: 'xlarge' },
+  const fontSizes = [
+    { label: 'صغير', value: 'small' as const },
+    { label: 'متوسط', value: 'medium' as const },
+    { label: 'كبير', value: 'large' as const },
+    { label: 'كبير جداً', value: 'xlarge' as const },
   ];
 
   const lineHeights = [
@@ -41,179 +39,251 @@ export default function SettingsScreen() {
     { label: 'أسبوع', value: 7 },
   ];
 
-  const SettingSection = ({
-    title,
-    children,
-  }: {
-    title: string;
-    children: React.ReactNode;
-  }) => (
-    <View className="mb-6">
-      <Text
-        className="text-lg font-bold mb-3"
-        style={{ color: colors.primary }}
-      >
-        {title}
-      </Text>
-      {children}
-    </View>
-  );
-
-  const OptionButton = ({
-    label,
-    isSelected,
-    onPress,
-  }: {
-    label: string;
-    isSelected: boolean;
-    onPress: () => void;
-  }) => (
-    <TouchableOpacity
-      onPress={onPress}
-      className="px-4 py-3 rounded-lg mb-2"
-      style={{
-        backgroundColor: isSelected ? colors.primary : colors.surface,
-        borderWidth: isSelected ? 0 : 1,
-        borderColor: colors.border,
-      }}
-    >
-      <Text
-        className="text-center font-semibold"
-        style={{
-          color: isSelected ? colors.background : colors.foreground,
-        }}
-      >
-        {label}
-      </Text>
-    </TouchableOpacity>
-  );
-
   return (
     <ScreenContainer className="p-4">
       <ScrollView showsVerticalScrollIndicator={false}>
-        <Text className="text-3xl font-bold mb-6" style={{ color: colors.primary }}>
+        {/* Header */}
+        <Text
+          className="text-3xl font-bold mb-6 text-right"
+          style={{ color: colors.primary }}
+        >
           الإعدادات
         </Text>
 
-        {/* Font Size Section */}
-        <SettingSection title="حجم الخط">
-          {fontSizes.map((size) => (
-            <OptionButton
-              key={size.value}
-              label={size.label}
-              isSelected={settings.fontSize === size.value}
-              onPress={() => updateFontSize(size.value)}
-            />
-          ))}
-        </SettingSection>
-
-        {/* Line Height Section */}
-        <SettingSection title="تباعد الأسطر">
-          {lineHeights.map((height) => (
-            <OptionButton
-              key={height.value}
-              label={height.label}
-              isSelected={settings.lineHeight === height.value}
-              onPress={() => updateLineHeight(height.value)}
-            />
-          ))}
-        </SettingSection>
-
         {/* Color Themes Section */}
-        <SettingSection title="سمات الألوان">
-          <ColorThemeSelector />
-        </SettingSection>
+        <View className="mb-6">
+          <Text
+            className="text-lg font-bold mb-3 text-right"
+            style={{ color: colors.foreground }}
+          >
+            🎨 سمات الألوان
+          </Text>
+          <ModernColorPicker />
+        </View>
 
         {/* Dark Mode Section */}
-        <SettingSection title="الوضع الليلي">
-          <View
-            className="flex-row items-center justify-between px-4 py-4 rounded-lg"
-            style={{ backgroundColor: colors.surface }}
-          >
-            <Text style={{ color: colors.foreground }}>تفعيل الوضع الليلي</Text>
+        <View
+          className="mb-6 p-4 rounded-xl"
+          style={{
+            backgroundColor: colors.surface,
+            borderWidth: 1,
+            borderColor: colors.border,
+          }}
+        >
+          <View className="flex-row items-center justify-between">
             <Switch
-              value={settings.isDarkMode}
-              onValueChange={toggleDarkMode}
-              trackColor={{ false: colors.border, true: colors.primary }}
-              thumbColor={settings.isDarkMode ? colors.background : colors.muted}
+              value={colorScheme === 'dark'}
+              onValueChange={(value) =>
+                setColorScheme(value ? 'dark' : 'light')
+              }
+              trackColor={{
+                false: colors.border,
+                true: colors.primary,
+              }}
+              thumbColor={colors.background}
             />
+            <Text
+              className="text-base font-semibold text-right"
+              style={{ color: colors.foreground }}
+            >
+              🌙 الوضع الليلي
+            </Text>
           </View>
-        </SettingSection>
+        </View>
+
+        {/* Font Size Section */}
+        <View className="mb-6">
+          <Text
+            className="text-lg font-bold mb-3 text-right"
+            style={{ color: colors.foreground }}
+          >
+            📝 حجم الخط
+          </Text>
+          <View className="gap-2">
+            {fontSizes.map((size) => (
+              <TouchableOpacity
+                key={size.value}
+                onPress={() => updateFontSize(size.value)}
+                className="p-3 rounded-lg flex-row items-center justify-between"
+                style={{
+                  backgroundColor:
+              settings.fontSize === size.value ? colors.primary : colors.surface,
+              borderWidth: 1,
+              borderColor:
+                settings.fontSize === size.value ? colors.primary : colors.border,
+                }}
+              >
+                <Text
+                  className="font-semibold"
+                  style={{
+                    color:
+                  settings.fontSize === size.value
+                    ? colors.background
+                    : colors.foreground,
+                  }}
+                >
+                  {size.label}
+                </Text>
+                {                settings.fontSize === size.value && (
+                  <Text
+                    style={{
+                      color: colors.background,
+                    }}
+                  >
+                    ✓
+                  </Text>
+                )}
+              </TouchableOpacity>
+            ))}
+          </View>
+        </View>
+
+        {/* Line Height Section */}
+        <View className="mb-6">
+          <Text
+            className="text-lg font-bold mb-3 text-right"
+            style={{ color: colors.foreground }}
+          >
+            ↕️ تباعد الأسطر
+          </Text>
+          <View className="gap-2">
+            {lineHeights.map((height) => (
+              <TouchableOpacity
+                key={height.value}
+                onPress={() => updateLineHeight(height.value)}
+                className="p-3 rounded-lg flex-row items-center justify-between"
+                style={{
+                  backgroundColor:
+              settings.lineHeight === height.value
+                ? colors.primary
+                : colors.surface,
+              borderWidth: 1,
+              borderColor:
+                settings.lineHeight === height.value
+                  ? colors.primary
+                  : colors.border,
+                }}
+              >
+                <Text
+                  className="font-semibold"
+                  style={{
+                    color:
+                  settings.lineHeight === height.value
+                    ? colors.background
+                    : colors.foreground,
+                  }}
+                >
+                  {height.label}
+                </Text>
+                {                settings.lineHeight === height.value && (
+                  <Text
+                    style={{
+                      color: colors.background,
+                    }}
+                  >
+                    ✓
+                  </Text>
+                )}
+              </TouchableOpacity>
+            ))}
+          </View>
+        </View>
 
         {/* Reminders Section */}
-        <SettingSection title="التذكيرات">
-          <View
-            className="px-4 py-4 rounded-lg mb-3"
-            style={{ backgroundColor: colors.surface }}
-          >
-            <View className="flex-row items-center justify-between mb-3">
-              <Text style={{ color: colors.foreground }}>تفعيل التذكيرات</Text>
-              <Switch
-                value={reminderSettings.enabled}
-                onValueChange={toggleReminders}
-                trackColor={{ false: colors.border, true: colors.primary }}
-                thumbColor={reminderSettings.enabled ? colors.background : colors.muted}
-              />
-            </View>
+        <View className="mb-6">
+          <View className="flex-row items-center justify-between mb-3">
+            <Switch
+              value={remindersEnabled}
+              onValueChange={setRemindersEnabled}
+              trackColor={{
+                false: colors.border,
+                true: colors.primary,
+              }}
+              thumbColor={colors.background}
+            />
             <Text
-              className="text-xs"
-              style={{ color: colors.muted }}
+              className="text-lg font-bold text-right"
+              style={{ color: colors.foreground }}
             >
-              سيتم تذكيرك بقراءة القرآن إذا لم تدخل التطبيق
+              🔔 التذكيرات
             </Text>
           </View>
 
-          {reminderSettings.enabled && (
-            <>
-              <Text
-                className="text-sm font-semibold mb-2"
-                style={{ color: colors.foreground }}
-              >
-                التذكير بعد:
-              </Text>
+          {remindersEnabled && (
+            <View className="gap-2">
               {reminderIntervals.map((interval) => (
-                <OptionButton
+                <TouchableOpacity
                   key={interval.value}
-                  label={interval.label}
-                  isSelected={reminderSettings.intervalDays === interval.value}
-                  onPress={() => setIntervalDays(interval.value)}
-                />
+                  onPress={() => setReminderInterval(interval.value)}
+                  className="p-3 rounded-lg flex-row items-center justify-between"
+                  style={{
+                    backgroundColor:
+                      reminderInterval === interval.value
+                        ? colors.primary
+                        : colors.surface,
+                    borderWidth: 1,
+                    borderColor:
+                      reminderInterval === interval.value
+                        ? colors.primary
+                        : colors.border,
+                  }}
+                >
+                  <Text
+                    className="font-semibold"
+                    style={{
+                      color:
+                        reminderInterval === interval.value
+                          ? colors.background
+                          : colors.foreground,
+                    }}
+                  >
+                    {interval.label}
+                  </Text>
+                  {reminderInterval === interval.value && (
+                    <Text
+                      style={{
+                        color: colors.background,
+                      }}
+                    >
+                      ✓
+                    </Text>
+                  )}
+                </TouchableOpacity>
               ))}
-            </>
-          )}
-        </SettingSection>
-
-        {/* About Section */}
-        <SettingSection title="معلومات">
-          <View
-            className="px-4 py-4 rounded-lg"
-            style={{ backgroundColor: colors.surface }}
-          >
-            <Text style={{ color: colors.foreground }} className="mb-3">
-              <Text className="font-bold">التطبيق:</Text> مصحف النور
-            </Text>
-            <Text style={{ color: colors.foreground }} className="mb-3">
-              <Text className="font-bold">الإصدار:</Text> 1.0.0
-            </Text>
-            <Text style={{ color: colors.foreground }} className="mb-4">
-              <Text className="font-bold">المطور:</Text> محمد حيدر
-            </Text>
-            <Text style={{ color: colors.muted }} className="text-sm leading-relaxed mb-4">
-              تطبيق لقراءة القرآن الكريم بدون إنترنت مع تصميم جميل ومريح للعين
-            </Text>
-            <View
-              className="p-3 rounded-lg"
-              style={{ backgroundColor: colors.border }}
-            >
-              <Text
-                style={{ color: colors.foreground }}
-                className="text-xs leading-relaxed text-right"
-              >
-                أسأل الله العلي العظيم أن يجعل هذا العمل خالصاً لوجهه الكريم، وأن يتقبله صدقة جارية لي ولوالدي، وأن يكون نوراً ورفعة لنا في الدنيا والآخرة. لا تنسونا من صالح دعائكم بظهر الغيب.
-              </Text>
             </View>
-          </View>
-        </SettingSection>
+          )}
+        </View>
+
+        {/* Developer Info Section */}
+        <View
+          className="mb-6 p-4 rounded-xl"
+          style={{
+            backgroundColor: colors.surface,
+            borderWidth: 1,
+            borderColor: colors.border,
+          }}
+        >
+          <Text
+            className="text-base font-bold mb-2 text-right"
+            style={{ color: colors.foreground }}
+          >
+            👨‍💻 عن المطور
+          </Text>
+          <Text
+            className="text-sm text-right leading-relaxed"
+            style={{ color: colors.muted, lineHeight: 20 }}
+          >
+            تم تطوير هذا المشروع بالكامل بواسطة المطور محمد حيدر.
+          </Text>
+          <Text
+            className="text-xs text-right mt-3 leading-relaxed"
+            style={{ color: colors.muted, lineHeight: 18 }}
+          >
+            أسأل الله العلي العظيم أن يجعل هذا العمل خالصا لوجهه الكريم، وأن
+            يتقبله صدقة جارية لي ولوالدي، وأن يكون نورا ورفعة لنا في الدنيا
+            والآخرة. لا تنسونا من صالح دعائكم بظهر الغيب.
+          </Text>
+        </View>
 
         <View className="h-4" />
       </ScrollView>

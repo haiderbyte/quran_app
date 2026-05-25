@@ -1,69 +1,20 @@
 /** @type {const} */
 const themeColors = {
-  // الأخضر الفاتح الهادئ - اللون الأساسي
-  primary: { light: '#2D8659', dark: '#4CAF7F' },
-  // الخلفية - كريمي دافئ في النهار، بني عميق في الليل
-  background: { light: '#F5F1ED', dark: '#1A1410' },
-  // السطح - بيج فاتح في النهار، بني غامق في الليل
-  surface: { light: '#F0E8E0', dark: '#2A1F18' },
-  // النص الأساسي - بني غامق في النهار، كريمي فاتح في الليل
-  foreground: { light: '#3E2723', dark: '#F5E6D3' },
-  // النص الثانوي - بني متوسط
-  muted: { light: '#8D6E63', dark: '#A1887F' },
-  // الحدود - بني فاتح جداً
-  border: { light: '#D7CCC8', dark: '#3E2723' },
-  // النجاح - أخضر فاتح
-  success: { light: '#4CAF7F', dark: '#81C784' },
-  // التحذير - ذهبي دافئ
-  warning: { light: '#D4A574', dark: '#FFB74D' },
-  // الخطأ - أحمر فاتح
-  error: { light: '#E57373', dark: '#EF9A9A' },
-  // رقم الآية - أخضر فاتح
-  verseNumber: { light: '#2D8659', dark: '#4CAF7F' },
+  // Modern Premium Colors - Forest Green & Teal
+  primary: { light: '#1B5E3F', dark: '#2DD4BF' },
+  background: { light: '#F8FAFB', dark: '#0F1419' },
+  surface: { light: '#FFFFFF', dark: '#1A1F2E' },
+  foreground: { light: '#0F1419', dark: '#F1F5F9' },
+  muted: { light: '#64748B', dark: '#94A3B8' },
+  border: { light: '#E2E8F0', dark: '#334155' },
+  success: { light: '#059669', dark: '#10B981' },
+  warning: { light: '#D97706', dark: '#FBBF24' },
+  error: { light: '#DC2626', dark: '#F87171' },
+  
+  // Additional accent colors for premium feel
+  accent1: { light: '#0EA5E9', dark: '#06B6D4' },
+  accent2: { light: '#8B5CF6', dark: '#A78BFA' },
+  accent3: { light: '#EC4899', dark: '#F472B6' },
 };
 
-// سمات الألوان المتدرجة
-const colorThemes = {
-  theme1: {
-    name: 'الأخضر والبني',
-    colors: {
-      top: '#7CB342',
-      upper: '#A1887F',
-      middle: '#D32F2F',
-      lower: '#E8D5C4',
-      bottom: '#FFF9C4',
-    },
-  },
-  theme2: {
-    name: 'البرتقالي والكريمي',
-    colors: {
-      top: '#FF9800',
-      upper: '#D2691E',
-      middle: '#CD5C5C',
-      lower: '#F5DEB3',
-      bottom: '#FFFACD',
-    },
-  },
-  theme3: {
-    name: 'البنفسجي والرمادي',
-    colors: {
-      top: '#D7CCC8',
-      upper: '#A39F9F',
-      middle: '#9C7E8F',
-      lower: '#F5E6D3',
-      bottom: '#FFFEF0',
-    },
-  },
-  theme4: {
-    name: 'الوردي والأخضر',
-    colors: {
-      top: '#FF9999',
-      upper: '#E8A87C',
-      middle: '#D4A5A5',
-      lower: '#F5E6D3',
-      bottom: '#C8E6C9',
-    },
-  },
-};
-
-module.exports = { themeColors, colorThemes };
+module.exports = { themeColors };

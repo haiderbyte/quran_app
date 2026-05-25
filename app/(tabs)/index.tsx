@@ -1,115 +1,107 @@
-import { useState } from 'react';
-import { View, Text } from 'react-native';
+import React, { useState, useMemo } from 'react';
+import { FlatList, Text, View, TextInput, TouchableOpacity } from 'react-native';
+import { useRouter } from 'expo-router';
 import { ScreenContainer } from '@/components/screen-container';
-import { SurahList } from '@/components/surah-list';
-import { SurahReader } from '@/components/surah-reader';
-import { useQuran } from '@/hooks/use-quran';
-import { useQuranSettings } from '@/hooks/use-quran-settings';
+import { useQuran, type Surah } from '@/hooks/use-quran';
 import { useColors } from '@/hooks/use-colors';
+import { ModernSurahCard } from '@/components/modern-surah-card';
 
 export default function HomeScreen() {
-  const { surahs, currentSurah, setSurahId, searchSurahs, isLoading } = useQuran();
-  const {
-    settings,
-    getFontSizePixels,
-    addToFavorites,
-    removeFromFavorites,
-    isFavorite,
-    updateLastSurah,
-  } = useQuranSettings();
+  const router = useRouter();
+  const { surahs, isLoading } = useQuran();
   const colors = useColors();
-
   const [searchQuery, setSearchQuery] = useState('');
-  const [isReading, setIsReading] = useState(false);
+  const [selectedSurah, setSelectedSurah] = useState<number | null>(null);
 
-  const filteredSurahs = searchQuery.trim() ? searchSurahs(searchQuery) : surahs;
+  const filteredSurahs = useMemo(() => {
+    if (!searchQuery.trim()) return surahs;
+    const query = searchQuery.toLowerCase();
+    return surahs.filter(
+      (surah) =>
+        surah.name.includes(query) ||
+        surah.transliteration.toLowerCase().includes(query)
+    );
+  }, [surahs, searchQuery]);
 
-  const handleSelectSurah = (surah: any) => {
-    setSurahId(surah.id);
-    updateLastSurah(surah.id);
-    setIsReading(true);
-  };
-
-  const handleFavoriteToggle = (verseId: number) => {
-    if (isFavorite(verseId)) {
-      removeFromFavorites(verseId);
-    } else {
-      addToFavorites(verseId);
-    }
-  };
-
-  const handleNavigatePrevious = () => {
-    if (currentSurah && currentSurah.id > 1) {
-      const previousSurah = surahs.find((s) => s.id === currentSurah.id - 1);
-      if (previousSurah) {
-        setSurahId(previousSurah.id);
-        updateLastSurah(previousSurah.id);
-      }
-    }
-  };
-
-  const handleNavigateNext = () => {
-    if (currentSurah && currentSurah.id < 114) {
-      const nextSurah = surahs.find((s) => s.id === currentSurah.id + 1);
-      if (nextSurah) {
-        setSurahId(nextSurah.id);
-        updateLastSurah(nextSurah.id);
-      }
-    }
+  const handleSurahPress = (surahId: number) => {
+    setSelectedSurah(surahId);
+    // Navigate to surah detail screen
+    // router.push({ pathname: '/surah/[id]', params: { id: surahId } });
   };
 
   if (isLoading) {
     return (
       <ScreenContainer className="items-center justify-center">
-        <Text className="text-lg text-foreground">جاري تحميل القرآن الكريم...</Text>
-      </ScreenContainer>
-    );
-  }
-
-  if (isReading && currentSurah) {
-    return (
-      <ScreenContainer>
-        <SurahReader
-          surah={currentSurah}
-          fontSize={getFontSizePixels()}
-          lineHeight={settings.lineHeight}
-          onFavoriteToggle={handleFavoriteToggle}
-          isFavorite={isFavorite}
-          onNavigatePrevious={handleNavigatePrevious}
-          onNavigateNext={handleNavigateNext}
-          hasPrevious={currentSurah.id > 1}
-          hasNext={currentSurah.id < 114}
-        />
-        <View className="absolute top-0 left-4 right-4 pt-4">
-          <Text
-            onPress={() => setIsReading(false)}
-            className="text-primary font-semibold"
-            style={{ color: colors.primary }}
-          >
-            ← العودة
-          </Text>
-        </View>
+        <Text className="text-lg" style={{ color: colors.foreground }}>
+          جاري تحميل السور...
+        </Text>
       </ScreenContainer>
     );
   }
 
   return (
     <ScreenContainer className="p-4">
-      <View className="mb-4">
-        <Text className="text-3xl font-bold text-primary mb-2" style={{ color: colors.primary }}>
+      {/* Header */}
+      <View className="mb-6">
+        <Text
+          className="text-4xl font-bold mb-2 text-right"
+          style={{ color: colors.primary }}
+        >
           القرآن الكريم
         </Text>
-        <Text className="text-sm text-muted" style={{ color: colors.muted }}>
-          {surahs.length} سورة • {surahs.reduce((sum, s) => sum + s.total_verses, 0)} آية
+        <Text
+          className="text-sm text-right"
+          style={{ color: colors.muted }}
+        >
+          {surahs.length} سورة • 6236 آية
         </Text>
       </View>
 
-      <SurahList
-        surahs={filteredSurahs}
-        onSelectSurah={handleSelectSurah}
-        searchQuery={searchQuery}
-        onSearchChange={setSearchQuery}
-        currentSurahId={currentSurah?.id}
+      {/* Search Bar */}
+      <View
+        className="mb-6 px-4 py-3 rounded-xl flex-row items-center gap-3"
+        style={{
+          backgroundColor: colors.surface,
+          borderWidth: 1,
+          borderColor: colors.border,
+        }}
+      >
+        <Text style={{ color: colors.muted }}>🔍</Text>
+        <TextInput
+          placeholder="ابحث عن سورة..."
+          placeholderTextColor={colors.muted}
+          value={searchQuery}
+          onChangeText={setSearchQuery}
+          className="flex-1 text-right"
+          style={{
+            color: colors.foreground,
+            fontSize: 16,
+          }}
+        />
+      </View>
+
+      {/* Surahs List */}
+      <FlatList
+        data={filteredSurahs}
+        keyExtractor={(item: Surah) => item.id.toString()}
+        scrollEnabled={false}
+        renderItem={({ item }: { item: Surah }) => (
+          <ModernSurahCard
+            number={item.id}
+            name={item.name}
+            englishName={item.transliteration}
+            versesCount={item.total_verses}
+            onPress={() => handleSurahPress(item.id)}
+            isSelected={selectedSurah === item.id}
+          />
+        )}
+        ListEmptyComponent={
+          <View className="items-center justify-center py-8">
+            <Text style={{ color: colors.muted }}>
+              لم يتم العثور على سور
+            </Text>
+          </View>
+        }
       />
     </ScreenContainer>
   );

@@ -44,28 +44,30 @@ export default function AdhkarScreen() {
     return (
       <View
         key={item.id}
-        className="p-4 mb-3 rounded-lg"
+        className="p-4 mb-3 rounded-xl"
         style={{
           backgroundColor: isCompleted ? colors.success : colors.surface,
-          opacity: isCompleted ? 0.7 : 1,
+          borderWidth: 1,
+          borderColor: isCompleted ? colors.success : colors.border,
+          opacity: isCompleted ? 0.8 : 1,
         }}
       >
         <Text
-          className="text-right mb-3"
+          className="text-right mb-3 leading-relaxed"
           style={{
             fontSize: 16,
-            lineHeight: 24,
+            lineHeight: 28,
             color: isCompleted ? colors.background : colors.foreground,
           }}
         >
           {item.text}
         </Text>
 
-        <View className="flex-row items-center justify-between mt-3">
+        <View className="flex-row items-center justify-between mt-3 gap-2">
           <View className="flex-row items-center gap-2">
             <TouchableOpacity
               onPress={() => handleCounterDecrement(item.id, item.count)}
-              className="px-3 py-2 rounded-lg"
+              className="px-3 py-2 rounded-lg items-center justify-center"
               style={{ backgroundColor: colors.primary }}
             >
               <Text
@@ -94,16 +96,16 @@ export default function AdhkarScreen() {
               style={{ backgroundColor: colors.warning }}
             >
               <Text
-                className="font-bold text-sm"
+                className="font-bold text-xs"
                 style={{ color: colors.background }}
               >
-                إعادة تعيين
+                إعادة
               </Text>
             </TouchableOpacity>
           </View>
 
           <Text
-            className="text-sm font-semibold"
+            className="text-xs font-semibold"
             style={{
               color: isCompleted ? colors.background : colors.primary,
             }}
@@ -123,8 +125,15 @@ export default function AdhkarScreen() {
         {/* Category Header */}
         <TouchableOpacity
           onPress={() => toggleCategory(category.id)}
-          className="px-4 py-3 rounded-lg flex-row items-center justify-between"
-          style={{ backgroundColor: colors.primary }}
+          className="px-4 py-3 rounded-xl flex-row items-center justify-between"
+          style={{
+            backgroundColor: colors.primary,
+            shadowColor: colors.foreground,
+            shadowOffset: { width: 0, height: 2 },
+            shadowOpacity: 0.15,
+            shadowRadius: 8,
+            elevation: 3,
+          }}
         >
           <Text
             className="text-lg font-bold"
@@ -153,7 +162,9 @@ export default function AdhkarScreen() {
   if (isLoading) {
     return (
       <ScreenContainer className="items-center justify-center">
-        <Text className="text-lg text-foreground">جاري تحميل الأذكار...</Text>
+        <Text className="text-lg" style={{ color: colors.foreground }}>
+          جاري تحميل الأذكار...
+        </Text>
       </ScreenContainer>
     );
   }
@@ -161,10 +172,21 @@ export default function AdhkarScreen() {
   return (
     <ScreenContainer className="p-4">
       <ScrollView showsVerticalScrollIndicator={false}>
-        <Text className="text-3xl font-bold mb-6" style={{ color: colors.primary }}>
+        {/* Header */}
+        <Text
+          className="text-3xl font-bold mb-2 text-right"
+          style={{ color: colors.primary }}
+        >
           الأذكار والأدعية
         </Text>
+        <Text
+          className="text-sm text-right mb-6"
+          style={{ color: colors.muted }}
+        >
+          {categories.length} فئات • استمع وكرر
+        </Text>
 
+        {/* Categories */}
         {categories.map((category) => renderCategory(category))}
 
         <View className="h-4" />

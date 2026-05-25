@@ -1,20 +1,15 @@
 /** @type {const} */
 const themeColors = {
-  // Modern Premium Colors - Forest Green & Teal
-  primary: { light: '#1B5E3F', dark: '#2DD4BF' },
-  background: { light: '#F8FAFB', dark: '#0F1419' },
-  surface: { light: '#FFFFFF', dark: '#1A1F2E' },
-  foreground: { light: '#0F1419', dark: '#F1F5F9' },
-  muted: { light: '#64748B', dark: '#94A3B8' },
-  border: { light: '#E2E8F0', dark: '#334155' },
-  success: { light: '#059669', dark: '#10B981' },
-  warning: { light: '#D97706', dark: '#FBBF24' },
-  error: { light: '#DC2626', dark: '#F87171' },
-  
-  // Additional accent colors for premium feel
-  accent1: { light: '#0EA5E9', dark: '#06B6D4' },
-  accent2: { light: '#8B5CF6', dark: '#A78BFA' },
-  accent3: { light: '#EC4899', dark: '#F472B6' },
+  // الأخضر الغابة الهادئ - السمة الأساسية
+  primary: { light: '#2D6A4F', dark: '#52B788' },
+  background: { light: '#F8F9F7', dark: '#1B2F1F' },
+  surface: { light: '#E8F0EB', dark: '#2D4A37' },
+  foreground: { light: '#1B2F1F', dark: '#F0F7F3' },
+  muted: { light: '#5A7D6F', dark: '#A8C8B8' },
+  border: { light: '#D4E5DD', dark: '#3D5A47' },
+  success: { light: '#40916C', dark: '#74C69D' },
+  warning: { light: '#D4A574', dark: '#F4D9B8' },
+  error: { light: '#D62828', dark: '#FF6B6B' },
 };
 
 module.exports = { themeColors };

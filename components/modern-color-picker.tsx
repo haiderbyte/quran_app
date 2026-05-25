@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
 import { useColorTheme } from '@/hooks/use-color-theme';
 import { useColors } from '@/hooks/use-colors';
-import { cn } from '@/lib/utils';
 
 export function ModernColorPicker() {
   const { currentTheme, setTheme, getAllThemes } = useColorTheme();
@@ -38,27 +37,23 @@ export function ModernColorPicker() {
 
       {/* Color Themes Grid */}
       {isExpanded && (
-        <View className="mt-3 gap-2">
-          {themes.map((theme: any) => (
+        <ScrollView className="mt-3 gap-2" scrollEnabled={false}>
+          {themes.map((theme) => (
             <TouchableOpacity
               key={theme.id}
               onPress={() => {
                 setTheme(theme.id);
                 setIsExpanded(false);
               }}
-              className={cn(
-                'p-4 rounded-xl flex-row items-center gap-3 border-2',
-                currentTheme === theme.id
-                  ? 'border-primary'
-                  : 'border-border'
-              )}
+              className="p-4 rounded-xl flex-row items-center gap-3 border-2 mb-2"
               style={{
                 backgroundColor: colors.surface,
+                borderColor: currentTheme === theme.id ? colors.primary : colors.border,
               }}
             >
               {/* Color Gradient Preview */}
               <View className="flex-row gap-1 flex-1">
-                {Object.values(theme.colors).map((color: any, idx: number) => (
+                {Object.values(theme.colors).map((color: string, idx: number) => (
                   <View
                     key={idx}
                     className="flex-1 h-10 rounded-lg"
@@ -86,7 +81,7 @@ export function ModernColorPicker() {
               </View>
             </TouchableOpacity>
           ))}
-        </View>
+        </ScrollView>
       )}
     </View>
   );

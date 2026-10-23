@@ -1,3 +1,9 @@
+# تطبيق القرآن الكريم
+
+تطبيق جوال لقراءة القرآن الكريم بدون إنترنت، بتصميم مريح للعين، ويتيح التحكم بحجم الخط والوضع الليلي. مبني باستخدام React Native وExpo وTypeScript.
+
+---
+
 # Expo Mobile Template
 
 React Native mobile app with **Expo SDK 54**, **TypeScript**, and **React 19**.

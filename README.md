@@ -4,20 +4,37 @@
 
 ---
 
-# Expo Mobile Template
+## المتطلبات
 
-React Native mobile app with **Expo SDK 54**, **TypeScript**, and **React 19**.
+- Node.js 20 أو أحدث.
+- pnpm 9.12.0 كما هو محدد في `package.json`.
+- لتشغيل Android: Android Studio وAndroid SDK ومحاكي أو جهاز فعلي.
 
-**Tech Stack:** React Native 0.81 | Expo Router 6 | NativeWind 4 (Tailwind CSS) | TypeScript 5.9 | react-native-reanimated 4.x
+## التثبيت والتشغيل
 
----
+```bash
+corepack enable
+git clone https://github.com/haiderbyte/quran_app.git
+cd quran_app
+pnpm install
+pnpm android
+```
 
-## Quick Start
+يتطلب أمر Android وجود محاكي جاهز أو جهاز متصل. لتشغيل وضع التطوير الذي يشغّل الخادم وواجهة Metro للويب معًا:
 
-1. **Edit the home screen** — `app/(tabs)/index.tsx` is your app's main entry point
-2. **Customize theme** — Update tokens in `theme.config.js` (used by Tailwind + runtime) and app details in `app.config.ts`
-3. **Add new screens** — Use `ScreenContainer` component for proper SafeArea handling
-4. **Add tab icons** — Map icons in `icon-symbol.tsx` BEFORE using in tabs
+```bash
+pnpm dev
+```
+
+## الفحص والاختبارات
+
+```bash
+pnpm check
+pnpm lint
+pnpm test
+```
+
+يحتوي هذا المستودع حاليًا على خدمات backend اختيارية؛ جهّز إعداداتها محليًا حسب الحاجة ولا ترفع مفاتيح أو ملفات `.env` إلى GitHub.
 
 ---
 
